@@ -5,6 +5,10 @@ int isLetter(char character);
 int wordCounter(char arr[]);
 int letterCounter(char words[], int letterCountArr[]);
 int hashtagCounter(char crossWord[], int hashtagCountArr[]);
+int rowChecker(int rowCounter, char words[], int hashtagCountArr[], int letterCountArr[]);
+void rowWriter(char crossWord[], char words[]);
+void arrayPrint(char arr[]);
+
 
 int main(){
     //declaring variables
@@ -55,9 +59,14 @@ int main(){
 
 
     //--------------------Debugging-----------------------------------------------------------------------
-    for(int i=0; i<rowCounter; i++){
-        printf(" %d", hashtagCountArr[i]);
+    if(rowChecker(rowCounter, words, hashtagCountArr, letterCountArr)==wordCounter(words)){
+        rowWriter(crossWord, words);
+        arrayPrint(crossWord);
     }
+    else{
+        printf("Impossible");
+    }
+
     //--------------------Debugging-----------------------------------------------------------------------
 
     return 0;
@@ -133,6 +142,42 @@ int hashtagCounter(char crossWord[], int hashtagCountArr[]){
             counter++;
             }
         }
+        index++;
+    }
+}
+
+//Function to get the count of how many words can be fit in crossword map
+int rowChecker(int rowCounter, char words[], int hashtagCountArr[], int letterCountArr[]){
+    int counter=0;
+    for(int i=0; i<wordCounter(words); i++){
+        for(int j=0; j<rowCounter; j++){
+            if(letterCountArr[i]==hashtagCountArr[j]){
+               counter++;
+            }
+        }
+    }
+    return counter;
+}
+
+void rowWriter(char crossWord[], char words[]){
+    int index1=0;
+    int index2=0;
+    while(crossWord[index1]!='\0'){
+        if(crossWord[index1]=='#' && words[index2]!='\n'){
+            crossWord[index1]=words[index2];
+            index2++;
+        }
+        else if(words[index2]=='\n'){
+            index2++;
+        }
+        index1++;
+    }
+}
+
+void arrayPrint(char arr[]){
+    int index=0;
+    while(arr[index]!='\0'){
+        printf("%c", arr[index]);
         index++;
     }
 }
