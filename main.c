@@ -6,7 +6,7 @@ int wordCounter(char arr[]);
 int letterCounter(char words[], int letterCountArr[]);
 int hashtagCounter(char crossWord[], int hashtagCountArr[]);
 int rowChecker(int rowCounter, char words[], int hashtagCountArr[], int letterCountArr[], int wordOrder[]);
-void rowWriter(char crossWord[], char words[]);
+void rowWriter(char crossWord[], char words[], int wordStartingIndex[], int wordOrder[]);
 void arrayPrint(char arr[]);
 int rowPossible(int rowCounter,char words[],int hashtagCountArr[],int letterCountArr[], int wordOrder[]);
 void wordIndexing(int wordStartingIndex[],char words[]);
@@ -21,7 +21,7 @@ int main(){
     int letterCountArr[256];
     int hashtagCountArr[256];
     int wordStartingIndex[256] = {[0 ... 255] = 0};
-    int wordOrder[256];
+    int wordOrder[256] = {[0 ... 255] = 0};
 
     //Input of the crossword pattern
     while(1){
@@ -66,17 +66,12 @@ int main(){
 
     //--------------------Debugging-----------------------------------------------------------------------
     if(rowPossible(rowCounter, words, hashtagCountArr, letterCountArr, wordOrder)){
-        rowWriter(crossWord, words);
+        rowWriter(crossWord, words, wordStartingIndex, wordOrder);
         arrayPrint(crossWord);
-
-        for(int i=0; i<wordCounter(words); i++){
-            printf(" %d", wordOrder[i]);
-        }
     }
     else{
         printf("Impossible");
     }
-
     //--------------------Debugging-----------------------------------------------------------------------
 
     return 0;
@@ -175,16 +170,19 @@ int rowChecker(int rowCounter, char words[], int hashtagCountArr[], int letterCo
 }
 
 //Function to write words to crossword pattern
-void rowWriter(char crossWord[], char words[]){
+void rowWriter(char crossWord[], char words[], int wordStartingIndex[], int wordOrder[]){
     int index1=0;
-    int index2=0;
+    int index2=wordStartingIndex[wordOrder[0]];
+    int index3=1;
+
     while(crossWord[index1]!='\0'){
         if(crossWord[index1]=='#' && words[index2]!='\n'){
             crossWord[index1]=words[index2];
             index2++;
         }
         else if(words[index2]=='\n'){
-            index2++;
+            index2=wordStartingIndex[wordOrder[index3]];
+            index3++;
         }
         index1++;
     }
@@ -222,5 +220,3 @@ void wordIndexing(int wordStartingIndex[],char words[]){
     }
 
 }
-
-
