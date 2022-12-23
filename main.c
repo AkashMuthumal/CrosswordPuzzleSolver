@@ -5,9 +5,11 @@ int isLetter(char character);
 int wordCounter(char arr[]);
 int letterCounter(char words[], int letterCountArr[]);
 int hashtagCounter(char crossWord[], int hashtagCountArr[]);
-int rowChecker(int rowCounter, char words[], int hashtagCountArr[], int letterCountArr[]);
+int rowChecker(int rowCounter, char words[], int hashtagCountArr[], int letterCountArr[], int wordOrder[]);
 void rowWriter(char crossWord[], char words[]);
 void arrayPrint(char arr[]);
+int rowPossible(int rowCounter,char words[],int hashtagCountArr[],int letterCountArr[], int wordOrder[]);
+void wordIndexing(int wordStartingIndex[],char words[]);
 
 
 int main(){
@@ -18,6 +20,8 @@ int main(){
     int index=0;
     int letterCountArr[256];
     int hashtagCountArr[256];
+    int wordStartingIndex[256] = {[0 ... 255] = 0};
+    int wordOrder[256];
 
     //Input of the crossword pattern
     while(1){
@@ -57,11 +61,17 @@ int main(){
     //Creating an array to get the number of hashtags in crossword pattern
     hashtagCounter(crossWord, hashtagCountArr);
 
+    //Creating an array with starting index of words
+    wordIndexing(wordStartingIndex, words);
 
     //--------------------Debugging-----------------------------------------------------------------------
-    if(rowChecker(rowCounter, words, hashtagCountArr, letterCountArr)==wordCounter(words)){
+    if(rowPossible(rowCounter, words, hashtagCountArr, letterCountArr, wordOrder)){
         rowWriter(crossWord, words);
         arrayPrint(crossWord);
+
+        for(int i=0; i<wordCounter(words); i++){
+            printf(" %d", wordOrder[i]);
+        }
     }
     else{
         printf("Impossible");
@@ -147,18 +157,24 @@ int hashtagCounter(char crossWord[], int hashtagCountArr[]){
 }
 
 //Function to get the count of how many words can be fit in crossword map
-int rowChecker(int rowCounter, char words[], int hashtagCountArr[], int letterCountArr[]){
+int rowChecker(int rowCounter, char words[], int hashtagCountArr[], int letterCountArr[], int wordOrder[]){
     int counter=0;
-    for(int i=0; i<wordCounter(words); i++){
-        for(int j=0; j<rowCounter; j++){
-            if(letterCountArr[i]==hashtagCountArr[j]){
-               counter++;
+    int index=0;
+    for(int i=0; i<rowCounter; i++){
+        for(int j=0; j<wordCounter(words); j++){
+            if(letterCountArr[j]==hashtagCountArr[i]){
+                wordOrder[index]=j;
+                letterCountArr[j]=0;
+                counter++;
+                index++;
+                break;
             }
         }
     }
     return counter;
 }
 
+//Function to write words to crossword pattern
 void rowWriter(char crossWord[], char words[]){
     int index1=0;
     int index2=0;
@@ -174,6 +190,7 @@ void rowWriter(char crossWord[], char words[]){
     }
 }
 
+//Print array such as crossword
 void arrayPrint(char arr[]){
     int index=0;
     while(arr[index]!='\0'){
@@ -182,5 +199,28 @@ void arrayPrint(char arr[]){
     }
 }
 
+//Function to check whether words can be added into rows
+int rowPossible(int rowCounter,char words[],int hashtagCountArr[],int letterCountArr[], int wordOrder[]){
+    if(rowChecker(rowCounter, words, hashtagCountArr, letterCountArr, wordOrder)==wordCounter(words)){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
+
+//Function to make array containing the starting index of words
+void wordIndexing(int wordStartingIndex[],char words[]){
+    int index1=0;
+    int index2=0;
+    while(words[index1]!='\0'){
+        if(words[index1]=='\n'){
+            wordStartingIndex[index2+1]=index1+1;
+            index2++;
+        }
+        index1++;
+    }
+
+}
 
 
